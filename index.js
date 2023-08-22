@@ -30,15 +30,36 @@ async function run() {
     const reviewCollection = client.db("restoDb").collection("reviews");
     const cartCollection = client.db("restoDb").collection("carts");
 
+    //////////// user
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email };
+      const existingUser = await usersCollection.findOne(query);
+
+      if (existingUser) {
+        return res.send({ message: "user already exists" });
+      }
+
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
+    ///////////// menu
+
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
     });
 
+    /////////////// review
+
     app.get("/reviews", async (req, res) => {
       const result = await reviewCollection.find().toArray();
       res.send(result);
     });
+
+    /////////////// cart
 
     app.get("/carts", async (req, res) => {
       const email = req.query.email;
